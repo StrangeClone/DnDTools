@@ -85,7 +85,7 @@ public class MagicObjectManager extends JFrame {
 
         getItems();
         objectJList.setModel(listModel);
-        showItem(listModel.get(0));
+        objectJList.setSelectedIndex(0);
 
         addButton.addActionListener(e -> {
                 AddMagicObject dialog = new AddMagicObject(this);

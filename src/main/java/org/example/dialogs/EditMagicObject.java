@@ -1,6 +1,7 @@
 package org.example.dialogs;
 
 import org.example.MagicObjectManager;
+import org.example.magicobject.DescriptionGenerator;
 import org.example.magicobject.MagicObject;
 
 import javax.swing.*;
@@ -19,6 +20,7 @@ public class EditMagicObject extends JDialog {
     private JTextField subtypeField;
     private JTextArea descrpitionArea;
     private JTextArea propertiesArea;
+    private JButton generateDescriptionWithChatButton;
 
     public EditMagicObject(MagicObjectManager parent, MagicObject magicObject) {
         this.PARENT = parent;
@@ -50,6 +52,25 @@ public class EditMagicObject extends JDialog {
 
         // call onCancel() on ESCAPE
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        generateDescriptionWithChatButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Thread descriptionGeneration = new Thread(() -> {
+                    descrpitionArea.setEditable(false);
+                    descrpitionArea.setText("Generating...");
+                    DescriptionGenerator generator = new DescriptionGenerator(
+                            nameField.getText(),
+                            (String) rarityBox.getSelectedItem(),
+                            (String) typeBox.getSelectedItem(),
+                            subtypeField.getText(),
+                            propertiesArea.getText()
+                    );
+                    descrpitionArea.setText(generator.getResult());
+                    descrpitionArea.setEditable(true);
+                });
+                descriptionGeneration.start();
+            }
+        });
     }
 
     private void onOK() {
