@@ -1,6 +1,7 @@
 package org.example.dialogs;
 
 import org.example.MagicObjectManager;
+import org.example.call.Call;
 import org.example.magicobject.DescriptionGenerator;
 import org.example.magicobject.MagicObject;
 
@@ -41,16 +42,28 @@ public class AddMagicObject extends JDialog {
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         generateDescriptionWithChatButton.addActionListener(e -> {
             Thread descriptionGeneration = new Thread(() -> {
+                if(Call.KEY.isEmpty()) {
+                    SetKey dialog = new SetKey();
+                    dialog.setSize(300, 200);
+                    dialog.setTitle("Set the Key");
+                    dialog.setVisible(true);
+                }
                 descriptionText.setEditable(false);
+                String oldText = descriptionText.getText();
                 descriptionText.setText("Generating...");
-                DescriptionGenerator generator = new DescriptionGenerator(
-                        nameField.getText(),
-                        (String) rarityBox.getSelectedItem(),
-                        (String) typeBox.getSelectedItem(),
-                        subtypeField.getText(),
-                        propertiesArea.getText()
-                );
-                descriptionText.setText(generator.getResult());
+                try {
+                    DescriptionGenerator generator = new DescriptionGenerator(
+                            nameField.getText(),
+                            (String) rarityBox.getSelectedItem(),
+                            (String) typeBox.getSelectedItem(),
+                            subtypeField.getText(),
+                            propertiesArea.getText()
+                    );
+                    descriptionText.setText(generator.getResult());
+                } catch (Exception exp) {
+                    descriptionText.setText(oldText);
+                    JOptionPane.showMessageDialog(this, exp.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
                 descriptionText.setEditable(true);
             });
             descriptionGeneration.start();

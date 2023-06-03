@@ -1,6 +1,7 @@
 package org.example.dialogs;
 
 import org.example.MagicObjectManager;
+import org.example.call.Call;
 import org.example.magicobject.DescriptionGenerator;
 import org.example.magicobject.MagicObject;
 
@@ -52,25 +53,33 @@ public class EditMagicObject extends JDialog {
 
         // call onCancel() on ESCAPE
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        generateDescriptionWithChatButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        generateDescriptionWithChatButton.addActionListener(e -> {
                 Thread descriptionGeneration = new Thread(() -> {
+                    if(Call.KEY.isEmpty()) {
+                        SetKey dialog = new SetKey();
+                        dialog.setSize(300, 200);
+                        dialog.setTitle("Set the Key");
+                        dialog.setVisible(true);
+                    }
                     descrpitionArea.setEditable(false);
+                    String oldText = descrpitionArea.getText();
                     descrpitionArea.setText("Generating...");
-                    DescriptionGenerator generator = new DescriptionGenerator(
-                            nameField.getText(),
-                            (String) rarityBox.getSelectedItem(),
-                            (String) typeBox.getSelectedItem(),
-                            subtypeField.getText(),
-                            propertiesArea.getText()
-                    );
-                    descrpitionArea.setText(generator.getResult());
+                    try {
+                        DescriptionGenerator generator = new DescriptionGenerator(
+                                nameField.getText(),
+                                (String) rarityBox.getSelectedItem(),
+                                (String) typeBox.getSelectedItem(),
+                                subtypeField.getText(),
+                                propertiesArea.getText()
+                        );
+                        descrpitionArea.setText(generator.getResult());
+                    } catch (Exception exp) {
+                        descrpitionArea.setText(oldText);
+                        JOptionPane.showMessageDialog(this, exp.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                     descrpitionArea.setEditable(true);
                 });
-                descriptionGeneration.start();
-            }
-        });
+                descriptionGeneration.start();});
     }
 
     private void onOK() {

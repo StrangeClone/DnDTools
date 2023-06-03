@@ -13,8 +13,8 @@ import java.util.List;
  */
 public class Call {
 
-    static final String KEY = "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";
-    private boolean ready = false;
+    public static String KEY = "";
+    private final boolean ready;
     private final String result;
 
     /**
