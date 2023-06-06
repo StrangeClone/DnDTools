@@ -4,6 +4,7 @@ import org.example.MagicObjectManager;
 import org.example.call.Call;
 import org.example.magicobject.DescriptionGenerator;
 import org.example.magicobject.MagicObject;
+import org.example.magicobject.PropertiesGenerator;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -21,6 +22,7 @@ public class AddMagicObject extends JDialog {
     private JComboBox<String> rarityBox;
     private JComboBox<String> typeBox;
     private JButton generateDescriptionWithChatButton;
+    private JButton generatePropertiesWithChatButton;
 
     public AddMagicObject(MagicObjectManager parentFrame) {
         this.PARENT_FRAME = parentFrame;
@@ -68,6 +70,34 @@ public class AddMagicObject extends JDialog {
             });
             descriptionGeneration.start();
         });
+        generatePropertiesWithChatButton.addActionListener((e) ->  {
+                Thread descriptionGeneration = new Thread(() -> {
+                    if(Call.KEY.isEmpty()) {
+                        SetKey dialog = new SetKey();
+                        dialog.setSize(300, 200);
+                        dialog.setTitle("Set the Key");
+                        dialog.setVisible(true);
+                    }
+                    propertiesArea.setEditable(false);
+                    String oldText = propertiesArea.getText();
+                    propertiesArea.setText("Generating...");
+                    try {
+                        PropertiesGenerator generator = new PropertiesGenerator(
+                                nameField.getText(),
+                                (String) rarityBox.getSelectedItem(),
+                                requiresAttunementCheckBox.isSelected(),
+                                (String) typeBox.getSelectedItem(),
+                                subtypeField.getText(),
+                                descriptionText.getText()
+                        );
+                        propertiesArea.setText(generator.getResult());
+                    } catch (Exception exp) {
+                        propertiesArea.setText(oldText);
+                        JOptionPane.showMessageDialog(this, exp.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                    propertiesArea.setEditable(true);
+                });
+                descriptionGeneration.start();});
     }
 
     private void onOK() {

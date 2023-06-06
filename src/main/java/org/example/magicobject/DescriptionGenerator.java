@@ -15,7 +15,7 @@ public class DescriptionGenerator {
                                 String type,
                                 String subtype,
                                 String properties) throws Exception {
-        StringBuilder prompt = new StringBuilder("Describe the appearance of D&D 5-th edition Magic Object. ");
+        StringBuilder prompt = new StringBuilder("Generate the appearance of D&D 5-th edition Magic Object. ");
         prompt.append("The description must be 4-5 sentences long. It is extremely important that you don't give" +
                       " information about the game properties of the Magic Object, but you have to describe the " +
                       "appearance in a way that may give hints about its game properties. For example: if the object" +
@@ -70,7 +70,7 @@ public class DescriptionGenerator {
         }
     }
 
-    static List<MagicObject> selectSome(ResultSet set) throws SQLException {
+    public static List<MagicObject> selectSome(ResultSet set) throws SQLException {
         List<MagicObject> result = new ArrayList<>();
         while (set.next()) {
             MagicObject newObject = new MagicObject(set.getString("name"),
